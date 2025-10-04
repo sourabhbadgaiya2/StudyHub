@@ -8,7 +8,7 @@ const courseRoutes=require("./routes/Course");
 
 const database=require("./config/database");
 const cookieParser=require("cookie-parser");
-const core=require("cors");
+const cors=require("cors");
 const{cloudinaryConnect}=require("./config/cloudinary");
 const fileUpdate=require("express-fileupload");
 const dotenv=require("dotenv");
@@ -22,8 +22,8 @@ database.connect();
 //middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(core({
-    origin:"http://localhost:3000",
+app.use(cors({
+    origin:"https://study-hub-frontend-taupe.vercel.app",
     credentials:true,
 })
 )
