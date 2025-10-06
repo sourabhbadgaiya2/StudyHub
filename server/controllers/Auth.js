@@ -227,43 +227,101 @@ exports.login = async (req, res) => {
 // 	}
 // };
 
+// exports.sendotp = async (req, res) => {
+//   try {
+//     console.log("send otp called");
+//     const { email } = req.body;
+
+//     // Check if user already exists
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "User is already registered",
+//       });
+//     }
+
+//     // Generate unique OTP
+//     let otp;
+//     let otpExists;
+//     do {
+//       otp = otpGenerator.generate(6, {
+//         upperCaseAlphabets: false,
+//         lowerCaseAlphabets: false,
+//         specialChars: false,
+//       });
+//       otpExists = await OTP.findOne({ otp });
+//     } while (otpExists);
+
+//     // Save OTP (email auto-send will trigger via pre-save hook)
+//     await OTP.create({ email, otp });
+
+//     // Respond immediately
+//     return res.status(200).json({
+//       success: true,
+//       message: "OTP sent successfully",
+//     });
+//   } catch (error) {
+//     console.error("sendotp error:", error.message);
+//     return res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
 exports.sendotp = async (req, res) => {
   try {
-    console.log("send otp called");
     const { email } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const checkUserPresent = await User.findOne({ email });
+    if (checkUserPresent) {
       return res.status(401).json({
         success: false,
-        message: "User is already registered",
+        message: "User is Already Registered",
       });
     }
 
-    // Generate unique OTP
-    let otp;
-    let otpExists;
-    do {
+    // Generate a 6-digit OTP
+    let otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    // Ensure OTP is unique (rare case)
+    let existingOtp = await OTP.findOne({ otp });
+    while (existingOtp) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
       });
-      otpExists = await OTP.findOne({ otp });
-    } while (otpExists);
+      existingOtp = await OTP.findOne({ otp });
+    }
 
-    // Save OTP (email auto-send will trigger via pre-save hook)
-    await OTP.create({ email, otp });
+    // Save OTP in database
+    const otpBody = await OTP.create({ email, otp });
+    console.log("✅ OTP Created:", otpBody);
 
-    // Respond immediately
+    // Send OTP Email using SendGrid mailSender
+    const mailResponse = await mailSender(
+      email,
+      "StudyHub OTP Verification",
+      `<h2>Welcome to StudyHub!</h2>
+       <p>Your OTP is <b>${otp}</b>. It will expire in 5 minutes.</p>`
+    );
+
+    console.log("📧 Email sent:", mailResponse);
     return res.status(200).json({
       success: true,
       message: "OTP sent successfully",
     });
   } catch (error) {
-    console.error("sendotp error:", error.message);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error("❌ Error in sendotp:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send OTP",
+      error: error.message,
+    });
   }
 };
 
