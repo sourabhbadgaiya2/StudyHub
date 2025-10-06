@@ -67,7 +67,7 @@ function SignupForm() {
   //   setAccountType(ACCOUNT_TYPE.STUDENT)
   // }
 
-const handleOnSubmit = async (e) => {
+  const handleOnSubmit = async (e) => {
   e.preventDefault()
 
   if (password !== confirmPassword) {
@@ -97,7 +97,6 @@ const handleOnSubmit = async (e) => {
     console.error("Error sending OTP:", error)
   }
 }
-
 
   // data to pass to Tab component
   const tabData = [
