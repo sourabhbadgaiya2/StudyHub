@@ -1,3 +1,4 @@
+
 // const nodemailer = require("nodemailer");
 
 // const mailSender = async (email, title, body) => {
@@ -58,5 +59,7 @@ const mailSender = async (email, title, body) => {
     console.error("Mail send error:", error.message);
   }
 };
+
+
 
 module.exports = mailSender;
