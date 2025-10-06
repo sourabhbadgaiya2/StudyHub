@@ -41,13 +41,13 @@ const mailSender = async (email, title, body) => {
       port: 587,
       secure: false,
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: "studyhub232@gmail.com",
+        pass: "gjfw lpwu epkk qgnm",
       },
     });
 
     let info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
+      from: `"StudyNotion" <${"studyhub232@gmail.com"}>`,
       to: email,
       subject: title,
       html: body,
