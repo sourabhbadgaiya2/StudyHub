@@ -38,34 +38,66 @@ function SignupForm() {
   }
 
   // Handle Form Submission
-  const handleOnSubmit = (e) => {
-    e.preventDefault()
+  // const handleOnSubmit = (e) => {
+  //   e.preventDefault()
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords Do Not Match")
-      return
-    }
-    const signupData = {
-      ...formData,
-      accountType,
-    }
+  //   if (password !== confirmPassword) {
+  //     toast.error("Passwords Do Not Match")
+  //     return
+  //   }
+  //   const signupData = {
+  //     ...formData,
+  //     accountType,
+  //   }
 
-    // Setting signup data to state
-    // To be used after otp verification
-    dispatch(setSignupData(signupData))
-    // Send OTP to user for verification
-    dispatch(sendOtp(formData.email, navigate))
+  //   // Setting signup data to state
+  //   // To be used after otp verification
+  //   dispatch(setSignupData(signupData))
+  //   // Send OTP to user for verification
+  //   dispatch(sendOtp(formData.email, navigate))
 
-    // Reset
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    })
-    setAccountType(ACCOUNT_TYPE.STUDENT)
+  //   // Reset
+  //   setFormData({
+  //     firstName: "",
+  //     lastName: "",
+  //     email: "",
+  //     password: "",
+  //     confirmPassword: "",
+  //   })
+  //   setAccountType(ACCOUNT_TYPE.STUDENT)
+  // }
+
+const handleOnSubmit = async (e) => {
+  e.preventDefault()
+
+  if (password !== confirmPassword) {
+    toast.error("Passwords Do Not Match")
+    return
   }
+
+  const signupData = {
+    ...formData,
+    accountType,
+  }
+
+  dispatch(setSignupData(signupData))
+
+  try {
+    await dispatch(sendOtp(formData.email, navigate))
+    setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      })
+      setAccountType(ACCOUNT_TYPE.STUDENT)
+  
+  } catch (error) {
+    console.error("Error sending OTP:", error)
+  }
+}
+
 
   // data to pass to Tab component
   const tabData = [

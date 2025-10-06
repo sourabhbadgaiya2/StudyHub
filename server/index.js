@@ -23,7 +23,7 @@ database.connect();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin:"https://study-hub-frontend-taupe.vercel.app",
+    origin:"http://localhost:3000",
     credentials:true,
 })
 )
