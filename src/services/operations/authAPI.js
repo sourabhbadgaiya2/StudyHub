@@ -14,33 +14,73 @@ const {
   RESETPASSWORD_API,
 } = endpoints
 
+// export function sendOtp(email, navigate) {
+//   return async (dispatch) => {
+//     const toastId = toast.loading("Loading...")
+//     dispatch(setLoading(true))
+//     try {
+//       const response = await apiConnector("POST", SENDOTP_API, {
+//         email,
+//         checkUserPresent: true,
+//       })
+//       // console.log("SENDOTP API RESPONSE............", response)
+
+//       // console.log(response.data.success)
+
+//       if (!response.data.success) {
+//         throw new Error(response.data.message)
+//       }
+
+//       toast.success("OTP Sent Successfully")
+//       navigate("/verify-email")
+//     } catch (error) {
+//       console.log("SENDOTP API ERROR............", error)
+//       toast.error("Could Not Send OTP")
+//     }
+//     dispatch(setLoading(false))
+//     toast.dismiss(toastId)
+//   }
+// }
+
 export function sendOtp(email, navigate) {
   return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
+    const toastId = toast.loading("Sending OTP...");
+    dispatch(setLoading(true));
+
     try {
+      // Make the API call
       const response = await apiConnector("POST", SENDOTP_API, {
         email,
         checkUserPresent: true,
-      })
-      // console.log("SENDOTP API RESPONSE............", response)
+      });
 
-      // console.log(response.data.success)
+      console.log("SENDOTP API RESPONSE............", response);
 
-      if (!response.data.success) {
-        throw new Error(response.data.message)
+      // Check if API success flag is true
+      if (!response?.data?.success) {
+        throw new Error(response?.data?.message || "Failed to send OTP");
       }
 
-      toast.success("OTP Sent Successfully")
-      navigate("/verify-email")
+      // Show success message
+      toast.success("OTP Sent Successfully");
+
+      // ✅ Safely navigate only if function exists
+      if (typeof navigate === "function") {
+        navigate("/verify-email");
+      } else {
+        console.warn("⚠️ navigate is not a function — skipping navigation");
+      }
+
     } catch (error) {
-      console.log("SENDOTP API ERROR............", error)
-      toast.error("Could Not Send OTP")
+      console.log("SENDOTP API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could Not Send OTP ❌");
+    } finally {
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
     }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
+  };
 }
+
 
 export function signUp(
   accountType,
