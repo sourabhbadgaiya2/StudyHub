@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+const { Resend } = require("resend");
 
 // Initialize Resend with API key from environment variable
 const resend = new Resend("re_Tg3MrZA7_F82oqkKiL5yWSQude5rkQAiz");
@@ -20,4 +20,4 @@ const mailSender = async (email, title, body) => {
   }
 };
 
-export default mailSender;
+module.exports = mailSender;
